@@ -1,0 +1,39 @@
+git config --list
+git log -n 5
+git log --since=yyyy-mm-dd
+git log --until=yyyy-mm-dd
+git log --author="any part of author name" (is case sensitive though)
+git log --grep="any regex"
+
+HEAD ->  tip of the current branch of the repository
+
+git diff
+
+a/repository_file
+b/working_dir_file
+
+git diff --staged
+a/repository_file
+b/file_in_staging_index
+
+git rm <name_of_file> (using unix rm)
+already adds to staging tree ready to commit
+
+git mv old_name new_name
+
+git diff eg. 129,7 means "seeing first line is line 129 with 7 lines in total including context"
+
+in the PAGER, press -S to toggle between chopping long lines and wrapping them
+
+git diff --color-words
+
+For already tracked files, we can simply use git commit --all (git commit -a)
+
+What are the changes in a commit? git show (--color-words optionally)
+
+git diff old_commit..new_commit
+
+remove all untracked files
+git clean -n (dry run), -i (interactive), -f (force)
+
+git rm --cached filename (for already tracked files to be ignored using .gitignore)

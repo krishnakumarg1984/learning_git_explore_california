@@ -1,7 +1,7 @@
 # Demo/example
 
 .DS_Store
-*.zip
+!*.zip
 *.gz
 log/*.log
 log/*.log.[0-9]
