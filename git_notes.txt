@@ -117,6 +117,8 @@ use to return to an old state, but leave code changes staged
 Useful for amending commits. Like git commit --amend
 
 mixed: moves HEAD pointer. Changes staging index to match repo. Doesn't affect workdir
+leaves code changes in the working directory. Not in the staging
+
 
 hard: everything changed to a previous point of time
 
