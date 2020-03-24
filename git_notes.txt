@@ -128,3 +128,7 @@ Merges
 Always merge with a clean working directory. (good advice).
 Either commit or stash them
 
+1. git merge --abort
+2. can manually merge
+3. Can use a merge tool
+
