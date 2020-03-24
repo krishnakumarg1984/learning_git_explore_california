@@ -132,3 +132,11 @@ Either commit or stash them
 2. can manually merge (git show --color-words while in the MERGING state)
 3. Can use a merge tool
 
+keep lines short
+small, focused commits 
+spaces, tabs, line-returns
+merge often
+track changes to master often
+
+
+Stash
