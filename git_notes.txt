@@ -121,5 +121,5 @@ leaves code changes in the working directory. Not in the staging
 
 hard: everything changed to a previous point of time
 permanently undo commits
-Useful for making one branch look like another
+Useful for making one branch look like another: git reset --hard branchname
 
