@@ -129,6 +129,6 @@ Always merge with a clean working directory. (good advice).
 Either commit or stash them
 
 1. git merge --abort
-2. can manually merge
+2. can manually merge (git show --color-words while in the MERGING state)
 3. Can use a merge tool
 
