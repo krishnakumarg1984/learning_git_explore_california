@@ -123,3 +123,8 @@ hard: everything changed to a previous point of time
 permanently undo commits
 Useful for making one branch look like another: git reset --hard branchname
 
+Merges
+------
+Always merge with a clean working directory. (good advice).
+Either commit or stash them
+
