@@ -140,3 +140,18 @@ track changes to master often
 
 
 Stash
+-----
+git stash save "changed mission page title"
+stash doesn't include untracked files by default
+need the -u option to include untracked
+git stash list
+git stash show stash@{0} returns a diff-stat by default
+git stash show -p stash@{0} to show the actual changes
+stash is independent of the branch that we are on
+
+switch to desired branch, then git stash pop, remove the stash and apply it to our working directory
+git stash pop stash@{n} for a specific stash
+git stash apply (same as pop, except doesn't delete the stash)
+
+to delete a particular stash item, git stash drop stash@{0}
+to clear the stash, git stash clear
