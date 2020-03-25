@@ -155,3 +155,31 @@ git stash apply (same as pop, except doesn't delete the stash)
 
 to delete a particular stash item, git stash drop stash@{0}
 to clear the stash, git stash clear
+
+Remotes
+-------
+git remote
+git remote -v (more information)
+git branch -r (show remote branches)
+git branch -a (show both local and remote branches)
+
+git clone will fetch only the pushed remote branches
+
+git branch non_tracking_new_branch (is non-tracking)
+git push origin non_tracking_new_branch
+
+to track it,
+git branch -u origin/non_tracking_new_branch non_tracking_new_branch, will add correct lines to .git/config
+git branch --unset-upstream non_tracking_new_branch (to unset tracking)
+
+checking out remote branches
+git branch -r
+git checkout -b non_tracking_new_branch origin/non_tracking_new_branch
+
+deleting remote repository
+git push origin --delete remote_branch_to_delete
+git push origin :remote_branch_to_delete
+
+then git branch -r shall show that origin/remote_branch_to_delete is no longer present
+
+
