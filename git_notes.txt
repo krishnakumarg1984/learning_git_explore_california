@@ -182,4 +182,6 @@ git push origin :remote_branch_to_delete
 
 then git branch -r shall show that origin/remote_branch_to_delete is no longer present
 
+git config --global alias.st "status"
+
 
