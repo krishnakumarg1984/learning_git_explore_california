@@ -184,4 +184,289 @@ then git branch -r shall show that origin/remote_branch_to_delete is no longer p
 
 git config --global alias.st "status"
 
+git intermediate techniques
+---------------------------
+
+Force push (overwrite the remote version with the local version)
+
+git push -f (or --force)
+Use with extreme caution
+leads to orphaning of commits
+
+
+collaborator needs to git reset --hard origin/master
+
+git branch -r --merged
+
+Prune: delete stale remote tracking branches origin/branch_name
+Necessary when collaborators delete branches
+
+git remote prune origin [--dry-run]
+
+fetch does not prune
+git fetch --prune
+ git config --global fetch.prune true
+
+different from git prune/git gc
+
+Tags
+----
+named reference to a commit
+
+lightweight tag
+git tag nameoftag commit_sha
+
+annotated tag
+git tag -a v1.1 -m "message" commit_sha
+git tag -am "message" tag_name commit_sha
+
+if commit_sha is omitted, uses HEAD
+
+git tag -l (to list the tags)
+git tag -l "v2*" (to list tags beginning with v2)
+
+list tags with annotations: git tag -l -n
+
+git show tag_no
+git diff tag1..tag2
+
+git tag --delete tag_name
+
+git push does not transfer to remote by default
+
+git push origin tag_name
+
+for deleting
+------------
+git push origin :tag_name
+git push origin --delete tag_name
+
+
+checking out tags: BE CAREFUL
+
+git checkout -b non_branch tag_name : the right way to do it
+
+don't checkout git checkout tag_name (will move the HEAD)
+will detach HEAD
+to recover from this:
+1) git tag temp
+2) git branch temp_branch
+3) git checkout -b temp_branch (will reattach HEAD)
+4) git checkout master (to forget those commits made during detached HEAD state)
+
+
+git add -i
+u: update (git add) interactively
+r: revert (git checkout -- HEAD or git restore)
+a: add untracked
+d: diff
+
+Have to manually commit afterwards
+
+Hunk: an area where two files change
+
+can use patch mode outside of interactive mode
+git add -p
+git stash -p
+git reset -p
+git checkout -p
+git commit -p
+
+Can edit a hunk manually
+Use +,-,#,space
+
+to remove a line from a hunk to be staged, 
+    change - to a space
+    Remove the + lines
+
+
+Cherry-picking
+--------------
+How to share code between different branches (or even different repositories)
+
+Apply the changes from one or more existing commits (change-sets)
+Each existing commit is recorded as a new commit on the current branch (will have a different SHA)
+Conceptually similar to copy-paste
+
+git cherry-pick sha
+git cherry-pick sha1..sha2 (for a range of commits)
+
+while on the desired target branch, just issue git cherry-pick sha
+
+Cannot cherry-pick a merge commit
+
+-e to edit the commit message
+Can result in conflicts. After resolving manually, git add filename, then git cherry-pick --continue
+
+Git diff patches
+----------------
+git diff from_commit to_commit > output.diff
+
+When applying, it gets applied to the working directory. Not the repository. Won't commit them
+git apply  output.diff
+
+Create formatted patches. In Unix mailbox format
+includes commit messages
+
+Export all files in the range
+git format-patch sha1..sha2
+
+git format-patch sha (for exporting a range of commits as formatted patch)
+git format-patch -1 sha (for exporting a single commit as formatted patch)
+
+where to put these files? (-o option)
+git format-patch -o output_directory (will create if doesn't exist)
+
+git format-patch sha1..sha2 --stdout >  feature.patch
+
+When applying formatted patches, unlike a diff patch, the commit history is inside the patch file, and will therefore be transferred
+
+"am" (apply mailbox)
+git am directory/*.patch
+
+git am already commits them!!
+formatted patches are more useful most of the time
+
+Rebasing
+--------
+Managing techniques between two branches
+means .... take commits from one branch and replay them at the end of another branch
+Useful to integrate recent commits without having to perform a merge
+Maintains a cleaner and more linear project history
+Ensures that the topic/feature branch commits apply cleanly back to master
+No unnecessary merging or merge-conflicts to be resolved
+
+Simplified Conceptual Version
+-----------------------------
+Shifts our feature branch down to the tip of the master branch (SHAs will change, since the parent now becomes HEAD (of master branch))
+
+Simplified Conceptual Version
+-----------------------------
+1. starts to rewind each one of our branch's commits and puts them into a temporary storage
+2. Keeps doing that until it gets to a commit which diverged from the master branch
+3. Then, it moves to the tip of the master branch
+4. Now replays each one of those commits
+
+git rebase master  (does rebasing of current branch)
+git rebase master  branch_to_rebase
+
+Return the commit where the new_feature_branch diverged
+git merge-base master new_feature_branch
+
+Merging vs Rebasing
+-------------------
+Both are ways to incorporate changes from one branch into another branch
+Result is similar, but means are very different. Has side effects that are important to understand
+
+Merging: Adds a merge-commit.
+Advantages:
+So, non-destructive.
+Have a complete record of what happened and when it happened
+Easy to undo. Just do a hard-reset to undo the merge
+
+Disadvantages:
+Logs can become cluttered and non-linear
+If we author a topic branch and wait a whole month to merge it in, the merge commit will be one month later in the log than those commits 
+
+Rebasing: No additional merge-commit.
+
+Destructive. SHA changes, commits are rewritten.
+Is not a big deal if it applies cleanly, but is a bigger deal if there are conflicts in the process
+
+Also have the opportunity to edit the commits and change the history completely
+No longer a complete record of what happened and when
+Tricky to undo
+Logs are much cleaner and linear
+
+Because rebasing is destructive, need to talk abt the golden rule of rebasing
+-----------------------------------------------------------------------------
+
+Thou shall not rebase a public branch
+Rebase abandons existing, shared commits and creates new,similar commits instead
+Collaborators would see the project history vanish
+Getting everyone back in sync can be a nightmare
+Project history will be even more complicated
+
+How to choose
+-------------
+Merge to allow commits to stand out or to be clearly grouped
+Merge to bring in large topic branches back to the master branch. Is a significant event and we want to have it clearly indicated in history
+
+Rebase: to add minor commits in master to a topic branch (so that the topic branch still works well with what is going on in the master branch)
+Rebase: move commits from one branch to another
+
+Merge: anytime the topic branch is already public and being used by others (Golden rule of rebasing)
+
+Handling rebase conflicts
+-------------------------
+Rebasing creates new commits on existing code
+May conflict with existing code
+Git will pause rebase before each conflicting commit 
+
+Afer resolving, we run git add filename , and then git rebase --continue
+git rebase --skip, throw out the current commit , and proceed with the rest of the commits in the chain
+git rebase --abort
+
+git rebase --onto newbase upstream feature_branch (upstream = old branch it was on)
+Take all commits from where the feature_branch diverged off of the upstream branch, and replay those commits at the tip of the newbase branch
+
+--onto newbase is what we are adding here
+
+undoing a rebase
+git reset --hard ORIG_HEAD
+
+Interactive Rebasing
+--------------------
+Chance to modify the commits as they are being replayed
+Can reorder or skip commits
+Can edit commit contents
+pick  = use a commit
+drop = discard a commit (skipped)
+reword = change the commit message
+edit
+
+squash,fixup = take different commits and squash them into one
+exec = execute a shell command
+
+git rebase -i master new_feature
+opens up the git-rebase-todo file
+
+Powerful hack to edit commit history. Say, we want to edit last 3 commits, we can simply
+
+git rebase -i HEAD~3
+
+Squash commits
+
+fold 2 or more commits into one
+
+squash: Combine changesets, concatenate messages
+fixup: Combine changesets, discard this message
+squash: will squash into the commit above it. So, that must be 'pick'
+
+git pull --rebase may be better
+git pull --rebase=preserve
+git pull -r
+git pull -r=interactive
+
+git log -p
+git log -L 100,150:filename.txt
+
+git blame -w filename.txt
+git blame -L 100,150 filename.txt
+git blame -L 100,+5 filename.txt
+Will do it at HEAD by default
+
+
+git blame sha filename.txt (at rev #sha)
+git blame sha -- filename.txt (at rev #sha)
+
+git bisect start
+git bisect bad <treeish>
+git bisect good <treeish>
+git bisect reset
+
+
+
+
+
 
